@@ -1,5 +1,12 @@
-<h3>RECEIPT</h3>
-
+<table>
+  <tr>
+    <th scope="col">RECEIPT</th>
+  </tr>
+  <tr>
+    <td><%= @transaction_time %></td>
+  </tr>
+</table>
+<br>
 <table>
   <tr>
     <th scope="col">Item</th>
@@ -15,5 +22,11 @@
   <% end %>
 </table>
 <br>
-<p>Total Price : <%="$#{sprintf("%.2f", @receipt.values.sum {|item| item[:item_savings]})}"%></p>
-<p>You Saved <%="$#{sprintf("%.2f", @receipt.values.sum {|item| item[:item_savings]})} today"%></p>
+<table>
+  <tr>
+    <td>Total Price : <%="$#{sprintf("%.2f", @receipt.values.sum {|item| item[:item_savings]})}"%></td>
+  </tr>
+  <tr>
+    <td>You Saved <%="$#{sprintf("%.2f", @receipt.values.sum {|item| item[:item_savings]})} today"%></td>
+  </tr>
+</table>

@@ -45,7 +45,6 @@ RSpec.describe Receipt, type: :model do
       bread = Item.create(name: 'Bread', price: 2.17)
       receipt = Receipt.create(transaction_time: Time.now, items_purchased: 'milk,milk,bread')
       expect(receipt[:items_purchased].split(',').count).to eq(3)
-      # assert equal list
     end
   end
 end

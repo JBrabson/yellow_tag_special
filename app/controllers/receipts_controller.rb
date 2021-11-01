@@ -8,6 +8,7 @@ class ReceiptsController < ApplicationController
   def show
     receipt = Receipt.find(params[:id])
     @receipt = receipt.totals(receipt[:items_purchased])
+    @transaction_time = receipt[:transaction_time]
     @counts = receipt.sort_items(receipt[:items_purchased])
   end
 
