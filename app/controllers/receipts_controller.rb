@@ -2,6 +2,7 @@ class ReceiptsController < ApplicationController
   def index
     @weekly_items = Item.all
     @discounts = Discount.all
+    @receipts = Receipt.all
   end
 
   def show
