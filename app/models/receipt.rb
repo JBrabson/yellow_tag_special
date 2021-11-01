@@ -8,22 +8,21 @@ class Receipt < ApplicationRecord
     discounts = Discount.all
     purchased_items = sort_items(scanned_items)
     items_stats = Hash.new
-    purchased_items.each do |item|
+    items = Item.all
 
+    purchased_items.each do |item|
       name = item[0]
       discount = discounts.where(name: name)
-      if discount == [] || item[1] < discount[0][:qty_required]
-        items = Item.all
-        item_info = items.where(name: item[0])
+      item_info = items.where(name: item[0])
+
+      if discount.empty? || item[1] < discount[0][:qty_required]
         total = item[1] * item_info[0][:price]
-        items_stats[name] = {transaction_total: total, without_disc: total, item_savings: 0}
+        items_stats[name] = {transaction_total: total, without_disc: total, item_savings: 0, qty: item[1]}
       else discount && item[1] >= discount[0][:qty_required]
-        items = Item.all
-        item_info = items.where(name: item[0])
         discounted_total = (item[1] / discount[0][:qty_required]) * discount[0][:discounted_price]
         full_price_total = (item[1] % discount[0][:qty_required]) * item_info[0][:price]
         total = discounted_total + full_price_total
-        items_stats[name] = {transaction_total: total, without_disc: (item_info[0][:price] * item[1]).round(2), item_savings: (item_info[0][:price] * item[1] - total).round(2)}
+        items_stats[name] = {transaction_total: total, without_disc: (item_info[0][:price] * item[1]).round(2), item_savings: (item_info[0][:price] * item[1] - total).round(2), qty: item[1]}
       end
     end
     items_stats
@@ -56,6 +55,7 @@ class Receipt < ApplicationRecord
 
   def sort_items(items_string)
     items = items_string.split(',')
+    items = items.collect(&:strip)
     count = {}
     items.map do |item|
       if count[item.capitalize]

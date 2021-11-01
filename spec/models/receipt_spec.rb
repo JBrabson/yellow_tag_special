@@ -22,10 +22,11 @@ RSpec.describe Receipt, type: :model do
       bakers_bonanza = bread.discounts.create(name: 'Bread', qty_required: 3, discounted_price: 6.00)
       gone_bananas = banana.discounts.create(name: 'Banana', qty_required: 2, discounted_price: 0.50)
       result = {
-        "Apple"=>{:transaction_total=> 0.89, :without_disc=>0.89, :item_savings=>0},
-        "Milk"=>{:transaction_total=>5.0, :without_disc=>7.94, :item_savings=>2.94},
-        "Bread"=>{:transaction_total=>8.17, :without_disc=>8.68, :item_savings=>0.51},
-        "Banana"=>{:transaction_total=>0.99, :without_disc=>0.99, :item_savings=>0}}
+        "Apple"=>{:transaction_total=> 0.89, :without_disc=>0.89, :item_savings=>0, :qty=>1},
+        "Milk"=>{:transaction_total=>5.0, :without_disc=>7.94, :item_savings=>2.94, :qty=>2},
+        "Bread"=>{:transaction_total=>8.17, :without_disc=>8.68, :item_savings=>0.51, :qty=>4},
+        "Banana"=>{:transaction_total=>0.99, :without_disc=>0.99, :item_savings=>0, :qty=>1}
+      }
       expect(receipt.totals(receipt[:items_purchased])).to eq(result)
     end
 

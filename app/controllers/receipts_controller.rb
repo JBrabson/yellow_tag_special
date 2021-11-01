@@ -5,8 +5,9 @@ class ReceiptsController < ApplicationController
   end
 
   def show
-    @receipt = Receipt.find(params[:id])
-    binding.pry
+    receipt = Receipt.find(params[:id])
+    @receipt = receipt.totals(receipt[:items_purchased])
+    @counts = receipt.sort_items(receipt[:items_purchased])
   end
 
   def create
