@@ -1,5 +1,5 @@
 class Receipt < ApplicationRecord
-  validates_presence_of :transaction_time
+  validates_presence_of :transaction_time, :items_purchased
 
   has_many  :registers
   has_many  :items, through: :registers
@@ -9,16 +9,21 @@ class Receipt < ApplicationRecord
     purchased_items = sort_items(scanned_items)
     items_stats = Hash.new
     purchased_items.each do |item|
-      name = item[0][:name]
+
+      name = item[0]
       discount = discounts.where(name: name)
       if discount == [] || item[1] < discount[0][:qty_required]
-        total = item[1] * item[0][:price]
-        items_stats[item[0][:name]] = {transaction_total: total, without_disc: total, item_savings: 0}
+        items = Item.all
+        item_info = items.where(name: item[0])
+        total = item[1] * item_info[0][:price]
+        items_stats[name] = {transaction_total: total, without_disc: total, item_savings: 0}
       else discount && item[1] >= discount[0][:qty_required]
+        items = Item.all
+        item_info = items.where(name: item[0])
         discounted_total = (item[1] / discount[0][:qty_required]) * discount[0][:discounted_price]
-        full_price_total = (item[1] % discount[0][:qty_required]) * item[0][:price]
+        full_price_total = (item[1] % discount[0][:qty_required]) * item_info[0][:price]
         total = discounted_total + full_price_total
-        items_stats[name] = {transaction_total: total, without_disc: (item[0][:price] * item[1]).round(2), item_savings: (item[0][:price] * item[1] - total).round(2)}
+        items_stats[name] = {transaction_total: total, without_disc: (item_info[0][:price] * item[1]).round(2), item_savings: (item_info[0][:price] * item[1] - total).round(2)}
       end
     end
     items_stats
@@ -49,19 +54,16 @@ class Receipt < ApplicationRecord
     # item_totals
   end
 
-  def sort_items(items)
+  def sort_items(items_string)
+    items = items_string.split(',')
     count = {}
     items.map do |item|
-      if count[item]
-        then count[item] += 1
+      if count[item.capitalize]
+        then count[item.capitalize] += 1
       else
-        count[item] = 1
+        count[item.capitalize] = 1
       end
     end
     count
-  end
-
-  def scan_item(item)
-    items << item
   end
 end
